@@ -64,9 +64,10 @@ router.post('/checkin', function(req, res){
 
   	socket.emit('checkinObj',req.body);
 
-	console.log(req.body);
-
-	var mysql = require('mysql');
+  	if(req.body.status === "FAIL"){
+  			
+  	}else{
+  		var mysql = require('mysql');
 
 		var con = mysql.createConnection({
 			host: "localhost",
@@ -88,6 +89,8 @@ router.post('/checkin', function(req, res){
 		});
 
 	res.send('success');
+  	}
+	
 	
 });
 
