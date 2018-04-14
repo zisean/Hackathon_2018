@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+</head>
+<body>
+
+<ol class="breadcrumb text-center">
+  <li style="font-size: 36px">Facekathon Dashboard</li>
+
+</ol>
+
+<div id="logtable"></div>
+
+<script>
+	$(document).ready(function(){
+
+			var data = {};
+					data.title = "title";
+					data.message = "message";
+					
+					$.ajax({
+						type: 'POST',
+						data: JSON.stringify(data),
+				        contentType: 'application/json',
+                        url: 'http://localhost:8080/getData',						
+                        success: function(data) {
+
+
+            var table = $('<table>');
+		  var headings = $('<thead>')
+		  			.append($('<tr>')
+		  			.append($('<th>').text('No.'))
+		  			.append($('<th>').text('Username'))
+		  			.append($('<th>').text('Status'))
+		  			.append($('<th>').text('Time'))
+		  	);
+
+			  var tbody = $('<tbody>');
+
+			  table.append(headings).append(tbody);
+
+
+for(var i = 0; i < data.length; i++){
+					var tr = $('<tr>')
+					.append($('<td>').text(i))
+					.append($('<td>').text(data[i].username))
+					.append($('<td>').text(data[i].status))
+					.append($('<td>').text(data[i].timestamp));
+
+					tbody.append(tr);
+			  }
+			  	
+
+			  	$('#logtable').append(table);
+                            console.log('success');
+                            console.log(JSON.stringify(data));
+                        }
+                    });
+
+	
+	}); 
+
+	
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+
+<script>
+		var socket = io();
+		socket.on('checkinObj', function(checkin){
+				console.log("Refresh liao");
+
+				$(document).ready(function(){
+			var table = $('<table>');
+
+			  //table header
+			  var headings = $('<thead>')
+			  			.append($('<tr>')
+			  			.append($('<th>').text('No.'))
+			  			.append($('<th>').text('Username'))
+			  			.append($('<th>').text('Status'))
+			  			.append($('<th>').text('Time'))
+			  	);
+
+			  var tbody = $('<tbody>');
+
+			  table.append(headings).append(tbody);
+
+			  for(var i = 0; i < checkin.length; i++){
+					var tr = $('<tr>')
+					.append($('<td>').text(i))
+					.append($('<td>').text(checkin[i].data.username))
+					.append($('<td>').text(checkin[i].status))
+					.append($('<td>').text(checkin[i].timestamp));
+
+					tbody.append(tr);
+			  }
+
+			  	
+
+			  	$('#logtable').append(table);
+		});
+
+	});
+</script>
+</body>
+</html>
