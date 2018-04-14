@@ -35,7 +35,9 @@
                         success: function(data) {
 
 
-            var table = $('<table>');
+            var table = $('<table>')
+            			.addClass('table')
+            			.addClass('table-strip');
 		  var headings = $('<thead>')
 		  			.append($('<tr>')
 		  			.append($('<th>').text('No.'))
@@ -49,7 +51,7 @@
 			  table.append(headings).append(tbody);
 
 
-for(var i = 0; i < data.length; i++){
+			for(var i = 0; i < data.length; i++){
 					var tr = $('<tr>')
 					.append($('<td>').text(i))
 					.append($('<td>').text(data[i].username))
@@ -61,8 +63,6 @@ for(var i = 0; i < data.length; i++){
 			  	
 
 			  	$('#logtable').append(table);
-                            console.log('success');
-                            console.log(JSON.stringify(data));
                         }
                     });
 
@@ -81,34 +81,43 @@ for(var i = 0; i < data.length; i++){
 				console.log("Refresh liao");
 
 				$(document).ready(function(){
-			var table = $('<table>');
 
-			  //table header
-			  var headings = $('<thead>')
-			  			.append($('<tr>')
-			  			.append($('<th>').text('No.'))
-			  			.append($('<th>').text('Username'))
-			  			.append($('<th>').text('Status'))
-			  			.append($('<th>').text('Time'))
-			  	);
+					
 
-			  var tbody = $('<tbody>');
-
-			  table.append(headings).append(tbody);
-
-			  for(var i = 0; i < checkin.length; i++){
 					var tr = $('<tr>')
-					.append($('<td>').text(i))
-					.append($('<td>').text(checkin[i].data.username))
-					.append($('<td>').text(checkin[i].status))
-					.append($('<td>').text(checkin[i].timestamp));
+					.append($('<td>').text("33"))
+					.append($('<td>').text(checkin.data.username))
+					.append($('<td>').text(checkin.status))
+					.append($('<td>').text(checkin.timestamp));
 
-					tbody.append(tr);
-			  }
+					$('#logtable').find('tbody').append(tr);
+		
+		// var table = $('<table>');
+		//   var headings = $('<thead>')
+		//   			.append($('<tr>')
+		//   			.append($('<th>').text('No.'))
+		//   			.append($('<th>').text('Username'))
+		//   			.append($('<th>').text('Status'))
+		//   			.append($('<th>').text('Time'))
+		//   	);
 
+		// 	  var tbody = $('<tbody>');
+
+		// 	  table.append(headings).append(tbody);
+
+
+		// 	for(var i = 0; i < data.length; i++){
+		// 			var tr = $('<tr>')
+		// 			.append($('<td>').text(i))
+		// 			.append($('<td>').text(data[i].username))
+		// 			.append($('<td>').text(data[i].status))
+		// 			.append($('<td>').text(data[i].timestamp));
+
+		// 			tbody.append(tr);
+		// 	  }
 			  	
 
-			  	$('#logtable').append(table);
+		// 	  	$('#logtable').append(table);
 		});
 
 	});

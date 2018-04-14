@@ -58,37 +58,13 @@ connection.end();
 });
 
 // Post from client
-// router.post('/checkin', function(req, res){
-
-// 	var socket = io;
-
-// 	var jsonEG = [{ status: 'SUCCESS',
-//   					data: { username: 'howard' },
-//   					timestamp: 1523701749091 }];
-
-//   	socket.emit('checkinObj',req.body);
-
-// 	console.log(req.body);
-
-// 	res.send('success');
-	
-// });
-
-// Testing
-router.get('/checkin', function(req, res){
+router.post('/checkin', function(req, res){
 
 	var socket = io;
 
-	var checkin = [{ status: 'SUCCESS',
-  					data: { username: 'howard' },
-  					timestamp: 1523701749091 }];
+  	socket.emit('checkinObj',req.body);
 
-  //	io.on('connection', (socket) => {
-  		socket.emit('checkinObj',checkin);
-//});
-  
-
-	console.log(checkin);
+	console.log(req.body);
 
 	var mysql = require('mysql');
 
@@ -103,7 +79,7 @@ router.get('/checkin', function(req, res){
 
 		if(err) throw err;
 			console.log("Connected")
-			var sql = "INSERT INTO users (username, status, timestamp) VALUES ('" + checkin[0].data.username + "','" + checkin[0].status + "','" + checkin[0].timestamp + "')";
+			var sql = "INSERT INTO users (username, status, timestamp) VALUES ('" + req.body.data.username + "','" + req.body.status + "','" + req.body.timestamp + "')";
 
 			con.query(sql, function(err, result){
 				if (err) throw err;
@@ -112,10 +88,51 @@ router.get('/checkin', function(req, res){
 		});
 
 	res.send('success');
+	
+});
+
+// // Testing
+// router.get('/checkin', function(req, res){
+
+// 	var socket = io;
+
+	// var checkin = [{ status: 'SUCCESS',
+ //  					data: { username: 'howard' },
+ //  					timestamp: 1523701749091 }];
+
+//   //	io.on('connection', (socket) => {
+//   		socket.emit('checkinObj',checkin);
+// //});
+  
+
+// 	console.log(checkin);
+
+// 	var mysql = require('mysql');
+
+// 		var con = mysql.createConnection({
+// 			host: "localhost",
+// 			user: "root",
+// 			password: "",
+// 			database: "facekathon"
+// 		});
+
+// 		con.connect(function(err){
+
+// 		if(err) throw err;
+// 			console.log("Connected")
+// 			var sql = "INSERT INTO users (username, status, timestamp) VALUES ('" + checkin[0].data.username + "','" + checkin[0].status + "','" + checkin[0].timestamp + "')";
+
+// 			con.query(sql, function(err, result){
+// 				if (err) throw err;
+// 				console.log("1 record");
+// 			});
+// 		});
+
+// 	res.send('success');
 
 
 	
-});
+// });
 
 
 router.post('/checkout', function(req, res){
