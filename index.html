@@ -3,6 +3,9 @@
 <head>
 	<title></title>
 
+
+
+
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -13,9 +16,9 @@
 
 	<link rel="stylesheet" type="text/css" href="/css/style.css">
 
-	<style type="text/css">
-
-	</style>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
+ 
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
 
 </head>
 <body>
@@ -44,7 +47,8 @@
 
         var table = $('<table>')
             			.addClass('table')
-            			.addClass('table-strip');
+            			.addClass('table-strip')
+            			.attr('id', 'dashboardTable');
 
 		var headings = $('<thead>')
 					.append($('<tr>')
@@ -83,6 +87,7 @@
 			  	
 
 	  			$('#logtable').append(table);
+	  			$('#dashboardTable').DataTable();
             }
         });
 
