@@ -3,12 +3,19 @@
 <head>
 	<title></title>
 
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<script src="http://cdn.date-fns.org/v1.0.0/date_fns.min.js"></script>
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="/css/style.css">
 
+	<style type="text/css">
+
+	</style>
 
 </head>
 <body>
@@ -23,48 +30,61 @@
 <script>
 	$(document).ready(function(){
 
-			var data = {};
-					data.title = "title";
-					data.message = "message";
-					
-					$.ajax({
-						type: 'POST',
-						data: JSON.stringify(data),
-				        contentType: 'application/json',
-                        url: 'http://localhost:8080/getData',						
-                        success: function(data) {
+		var data = {};
+			data.title = "title";
+			data.message = "message";
+		
+			$.ajax({
+				type: 'POST',
+				data: JSON.stringify(data),
+		        contentType: 'application/json',
+	            url: 'http://localhost:8080/getData',						
+	            success: function(data) {
 
 
-            var table = $('<table>')
+        var table = $('<table>')
             			.addClass('table')
             			.addClass('table-strip');
-		  var headings = $('<thead>')
-		  			.append($('<tr>')
-		  			.append($('<th>').text('No.'))
-		  			.append($('<th>').text('Username'))
-		  			.append($('<th>').text('Status'))
-		  			.append($('<th>').text('Time'))
-		  	);
 
-			  var tbody = $('<tbody>');
+		var headings = $('<thead>')
+					.append($('<tr>')
+					.append($('<th>').text('No.'))
+					.append($('<th>').text('Username'))
+					.append($('<th>').text('Status'))
+					.append($('<th>').text('Time'))
+					.append($('<th>').text('Image'))
+					.append($('<th>').text('Type'))
 
-			  table.append(headings).append(tbody);
+		);
+
+		var tbody = $('<tbody>');
+
+		table.append(headings).append(tbody);
 
 
-			for(var i = 0; i < data.length; i++){
+		for(var i = 0; i < data.length; i++){
+
+			var date = dateFns.format(
+			  new Date(parseInt(data[i].timestamp)),
+			  'h:mm a'
+			)
 					var tr = $('<tr>')
 					.append($('<td>').text(i))
 					.append($('<td>').text(data[i].username))
 					.append($('<td>').text(data[i].status))
-					.append($('<td>').text(data[i].timestamp));
+					.append($('<td>').text(date))
+					.append(`<td><img id="myImg${i}" onclick="viewImage(${i})" class="img_size" src="/images/${data[i].image_name}.png"></td>`)
+					.append($('<td>').text(data[i].type));
 
 					tbody.append(tr);
-			  }
+				
+				
+		}
 			  	
 
-			  	$('#logtable').append(table);
-                        }
-                    });
+	  			$('#logtable').append(table);
+            }
+        });
 
 	
 	}); 
@@ -78,49 +98,64 @@
 <script>
 		var socket = io();
 		socket.on('checkinObj', function(checkin){
-				console.log("Refresh liao");
 
 				$(document).ready(function(){
 
-					
+					var date = dateFns.format(
+					  new Date(checkin.timestamp),
+					  'h:mm a'
+					)
+					var trLength = $('#logtable tr').length;
 
 					var tr = $('<tr>')
-					.append($('<td>').text(checkin.length + 1))
+					.append($('<td>').text($('#logtable tr').length - 1))
 					.append($('<td>').text(checkin.data.username))
 					.append($('<td>').text(checkin.status))
-					.append($('<td>').text(checkin.timestamp));
+					.append($('<td>').text(date))
+					.append(`<td><img id="myImg${$('#logtable tr').length - 1}" onclick="viewImage(${('#logtable tr').length - 1})" class="img_size" src="/images/${checkin.timestamp}.png"></td>`)
+					.append($('<td>').text(checkin.type));
 
 					$('#logtable').find('tbody').append(tr);
-		
-		// var table = $('<table>');
-		//   var headings = $('<thead>')
-		//   			.append($('<tr>')
-		//   			.append($('<th>').text('No.'))
-		//   			.append($('<th>').text('Username'))
-		//   			.append($('<th>').text('Status'))
-		//   			.append($('<th>').text('Time'))
-		//   	);
-
-		// 	  var tbody = $('<tbody>');
-
-		// 	  table.append(headings).append(tbody);
-
-
-		// 	for(var i = 0; i < data.length; i++){
-		// 			var tr = $('<tr>')
-		// 			.append($('<td>').text(i))
-		// 			.append($('<td>').text(data[i].username))
-		// 			.append($('<td>').text(data[i].status))
-		// 			.append($('<td>').text(data[i].timestamp));
-
-		// 			tbody.append(tr);
-		// 	  }
-			  	
-
-		// 	  	$('#logtable').append(table);
+	
 		});
 
 	});
 </script>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="img01">
+  <div id="caption"></div>
+</div>
+
+<script>
+
+function viewImage(i){ 
+    // Get the modal
+	var modal = document.getElementById('myModal');
+
+	// Get the image and insert it inside the modal - use its "alt" text as a caption
+	var img = document.getElementById('myImg' + i);
+	var modalImg = document.getElementById("img01");
+	var captionText = document.getElementById("caption");
+	$(`#myImg${i}`).click(function(){
+	    modal.style.display = "block";
+	    modalImg.src = img.src;
+	    captionText.innerHTML = img.alt;
+	    console.log('Clicked');
+	});
+
+	// Get the <span> element that closes the modal
+	var span = document.getElementsByClassName("close")[0];
+
+	// When the user clicks on <span> (x), close the modal
+	span.onclick = function() { 
+	    modal.style.display = "none";
+	}
+}
+
+</script>
+
 </body>
 </html>

@@ -3,8 +3,8 @@ var app = express();
 //var http = require('http').Server(app);
 var bodyParser = require('body-parser');
 
-app.use(bodyParser.urlencoded({ extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb'}));
+app.use(bodyParser.json({limit: '50mb'}));
 
 var port = process.env.PORT || 8080;
 
@@ -13,6 +13,10 @@ var server = app.listen(port);
 var io = require('socket.io').listen(server);
 
 var router = express.Router();
+
+const fs = require("fs");
+
+app.use(express.static('storage'));
 
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
@@ -62,25 +66,51 @@ router.post('/checkin', function(req, res){
 
 	var socket = io;
 
-  	socket.emit('checkinObj',req.body);
+  	var mysql = require('mysql');
+
+	var con = mysql.createConnection({
+		host: "localhost",
+		user: "root",
+		password: "",
+		database: "facekathon"
+	});
+
+	fs.writeFile('./storage/images/' + req.body.timestamp + '.png', req.body.data.image, 'base64',
+  				function(err){
+  					if(err) {
+  						console.log(err);
+  						res.send(err);
+
+  					}
+
+  			});
 
   	if(req.body.status === "FAIL"){
-  			
-  	}else{
-  		var mysql = require('mysql');
 
-		var con = mysql.createConnection({
-			host: "localhost",
-			user: "root",
-			password: "",
-			database: "facekathon"
-		});
+  			con.connect(function(err){
+
+			if(err) throw err;
+				console.log("Connected")
+				var sql = "INSERT INTO users (username, status, timestamp, image_name, type) VALUES ('-" 
+				+ "','" + req.body.status + "','" + req.body.timestamp + "','" +  req.body.timestamp + "', 'Clock-in')";
+
+				con.query(sql, function(err, result){
+					if (err) throw err;
+					console.log("1 record");
+				});
+			});
+  	}else{
 
 		con.connect(function(err){
 
 		if(err) throw err;
 			console.log("Connected")
-			var sql = "INSERT INTO users (username, status, timestamp) VALUES ('" + req.body.data.username + "','" + req.body.status + "','" + req.body.timestamp + "')";
+			var sql = `INSERT INTO users (username, status, timestamp, image_name, type) VALUES (
+			'${req.body.data.username}', 
+			'${req.body.status}', 
+			'${req.body.timestamp}', 
+			'${req.body.timestamp}', 
+			'Clock-in')`;
 
 			con.query(sql, function(err, result){
 				if (err) throw err;
@@ -88,9 +118,12 @@ router.post('/checkin', function(req, res){
 			});
 		});
 
-	res.send('success');
+		res.send('success');
   	}
+
+  	req.body.type = 'Clock-in';
 	
+	socket.emit('checkinObj',req.body);
 	
 });
 
@@ -99,9 +132,9 @@ router.post('/checkin', function(req, res){
 
 // 	var socket = io;
 
-	// var checkin = [{ status: 'SUCCESS',
- //  					data: { username: 'howard' },
- //  					timestamp: 1523701749091 }];
+// 	var checkin = { status: 'SUCCESS',
+//   					data: { username: 'Edward' },
+//   					timestamp: 1523701749091 };
 
 //   //	io.on('connection', (socket) => {
 //   		socket.emit('checkinObj',checkin);
@@ -123,8 +156,8 @@ router.post('/checkin', function(req, res){
 
 // 		if(err) throw err;
 // 			console.log("Connected")
-// 			var sql = "INSERT INTO users (username, status, timestamp) VALUES ('" + checkin[0].data.username + "','" + checkin[0].status + "','" + checkin[0].timestamp + "')";
-
+// 			var sql = "INSERT INTO users (username, status, timestamp, image_name) VALUES ('" 
+// 			+ checkin.data.username + "','" + checkin.status + "','" + checkin.timestamp + "','" + "')";
 // 			con.query(sql, function(err, result){
 // 				if (err) throw err;
 // 				console.log("1 record");
@@ -137,11 +170,81 @@ router.post('/checkin', function(req, res){
 	
 // });
 
+router.post('/register', function(req, res){
+	var mysql = require('mysql');
+
+	var con = mysql.createConnection({
+		host: "localhost",
+		user: "root",
+		password: "",
+		database: "facekathon"
+	});
+	res.send('register');
+});
+
 
 router.post('/checkout', function(req, res){
 
-	console.log(req.body);
-	res.json({ message: 'Hi API'});
+	var socket = io;
+
+  	var mysql = require('mysql');
+
+	var con = mysql.createConnection({
+		host: "localhost",
+		user: "root",
+		password: "",
+		database: "facekathon"
+	});
+
+	fs.writeFile('./storage/images/' + req.body.timestamp + '.png', req.body.data.image, 'base64',
+  				function(err){
+  					if(err) {
+  						console.log(err);
+  						res.send(err);
+
+  					}
+
+  			});
+
+  	if(req.body.status === "FAIL"){
+
+  			con.connect(function(err){
+
+			if(err) throw err;
+				console.log("Connected")
+				var sql = "INSERT INTO users (username, status, timestamp, image_name, type) VALUES ('-" 
+				+ "','" + req.body.status + "','" + req.body.timestamp + "','" +  req.body.timestamp + "', 'Clock-in')";
+
+				con.query(sql, function(err, result){
+					if (err) throw err;
+					console.log("1 record");
+				});
+			});
+  	}else{
+
+		con.connect(function(err){
+
+		if(err) throw err;
+			console.log("Connected")
+			var sql = `INSERT INTO users (username, status, timestamp, image_name, type) VALUES (
+			'${req.body.data.username}', 
+			'${req.body.status}', 
+			${req.body.timestamp}, 
+			'${req.body.timestamp}', 
+			'Clock-in')`;
+
+			con.query(sql, function(err, result){
+				if (err) throw err;
+				console.log("1 record");
+			});
+		});
+
+		res.send('success');
+  	}
+
+  	req.body.type = 'Clock-out';
+	
+	socket.emit('checkinObj',req.body);
 });
 
 
