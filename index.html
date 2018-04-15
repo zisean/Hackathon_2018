@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
-
-
-
+	<title>FaceKathon</title>
 
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
@@ -18,14 +15,13 @@
 
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
  
-<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
 
 </head>
 <body>
 
-<ol class="breadcrumb text-center">
+<ol class="breadcrumb text-center bread-style">
   <li style="font-size: 36px">Facekathon Dashboard</li>
-
 </ol>
 
 <div id="logtable"></div>
@@ -48,6 +44,7 @@
         var table = $('<table>')
             			.addClass('table')
             			.addClass('table-strip')
+            			.addClass('tableCustom')
             			.attr('id', 'dashboardTable');
 
 		var headings = $('<thead>')
@@ -55,7 +52,7 @@
 					.append($('<th>').text('No.'))
 					.append($('<th>').text('Username'))
 					.append($('<th>').text('Status'))
-					.append($('<th>').text('Time'))
+					.append($('<th>').text('Date|Time'))
 					.append($('<th>').text('Image'))
 					.append($('<th>').text('Type'))
 
@@ -70,20 +67,26 @@
 
 			var date = dateFns.format(
 			  new Date(parseInt(data[i].timestamp)),
-			  'h:mm a'
+			  'DD/MM/YYYY | h:mm a'
 			)
-					var tr = $('<tr>')
-					.append($('<td>').text(i))
-					.append($('<td>').text(data[i].username))
-					.append($('<td>').text(data[i].status))
-					.append($('<td>').text(date))
-					.append(`<td><img id="myImg${i}" onclick="viewImage(${i})" class="img_size" src="/images/${data[i].image_name}.png"></td>`)
-					.append($('<td>').text(data[i].type));
+					var isOK = true;
 
-					tbody.append(tr);
-				
-				
-		}
+					if (data[i].status === "FAIL") {
+						isOK = false;
+					}else{
+						isOK = true;
+					}
+						var tr = $('<tr>')
+						.append($('<td>').text(i + 1))
+						.append($('<td>').text(data[i].username))
+						.append($('<td>').attr('style', isOK ? 'color:green;': 'color:red;').text(data[i].status))
+						.append($('<td>').text(date))
+						.append(`<td><img id="myImg${i}" onclick="viewImage(${i})" class="img_size" src="/images/${data[i].image_name}.png"></td>`)
+						.append($('<td>').text(data[i].type));
+
+						tbody.append(tr);
+					
+			}
 			  	
 
 	  			$('#logtable').append(table);
@@ -93,7 +96,6 @@
 
 	
 	}); 
-
 	
 </script>
 
@@ -106,22 +108,46 @@
 
 				$(document).ready(function(){
 
+					var data = {};
+			data.title = "title";
+			data.message = "message";
+		
+			$.ajax({
+				type: 'POST',
+				data: JSON.stringify(data),
+		        contentType: 'application/json',
+	            url: 'http://localhost:8080/getData',						
+	            success: function(data) {
+
+	            	console.log(data.length);
+			
+					var isOK = true;
+
+					if (checkin.status === "FAIL") {
+						isOK = false;
+					}else{
+						isOK = true;
+					}
+
 					var date = dateFns.format(
-					  new Date(checkin.timestamp),
-					  'h:mm a'
+					  new Date(parseInt(checkin.timestamp)),
+					  'DD/MM/YYYY | h:mm a'
 					)
 					var trLength = $('#logtable tr').length;
 
 					var tr = $('<tr>')
-					.append($('<td>').text($('#logtable tr').length - 1))
+					.append($('<td>').text(data.length))
 					.append($('<td>').text(checkin.data.username))
-					.append($('<td>').text(checkin.status))
+					.append($('<td>').attr('style', isOK ? 'color:green;': 'color:red;').text(checkin.status))
 					.append($('<td>').text(date))
-					.append(`<td><img id="myImg${$('#logtable tr').length - 1}" onclick="viewImage(${('#logtable tr').length - 1})" class="img_size" src="/images/${checkin.timestamp}.png"></td>`)
+					.append(`<td><img id="myImg${data.length}" onclick="viewImage(${data.length})" class="img_size" src="/images/${checkin.timestamp}.png"></td>`)
 					.append($('<td>').text(checkin.type));
 
 					$('#logtable').find('tbody').append(tr);
-	
+
+           	 	}
+        	});
+
 		});
 
 	});

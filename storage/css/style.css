@@ -88,3 +88,21 @@
         width: 100%;
     }
 }
+
+.col-style{
+
+    padding: 100px;
+    vertical-align: center;
+
+}
+
+.col-style-1{
+    background-color: #DCDCDC; 
+        height: 100px;
+    width: 100px; 
+}
+
+.bread-style{
+    background-color: black;
+    color: white;
+}
